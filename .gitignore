@@ -1,0 +1,31 @@
+node_modules/
+dist/
+build/
+release/
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+.vite/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Build outputs
+dist-electron/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Local reference assets
+Fish Sprites/
+logo/*.psd
+logo/*-profile-photo-*.png
+
+# Native binary cache
+node_modules/.cache/

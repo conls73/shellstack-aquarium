@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(pkill -f \"vite\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -e \"const f = require\\('./node_modules/pixi-filters/dist/pixi-filters.cjs'\\); console.log\\(Object.keys\\(f\\).filter\\(k => k.toLowerCase\\(\\).includes\\('glow'\\)\\)\\)\")",
+      "Bash(node -e \"const f = require\\('./node_modules/pixi-filters'\\); console.log\\(Object.keys\\(f\\).filter\\(k => k.toLowerCase\\(\\).includes\\('glow'\\)\\)\\)\")",
+      "Bash(pkill -f \"node.*vite\")",
+      "Bash(pkill -f \"npm.*dev\")",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
