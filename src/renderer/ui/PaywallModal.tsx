@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLicenseStore } from '../store/licenseStore'
 import logoUrl from '../assets/ui/logo.png'
 
-const CHECKOUT_URL = 'https://test.checkout.dodopayments.com/buy/pdt_0NcuoqmzEM2rFkZCh4ahN?quantity=1'
+const CHECKOUT_URL = 'https://test.checkout.dodopayments.com/buy/pdt_0NcuoqmzEM2rFkZCh4ahN?quantity=1&redirect_url=https://shellstack.xyz/success'
 
 const styles: Record<string, React.CSSProperties> = {
   overlay: {
