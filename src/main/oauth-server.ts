@@ -32,7 +32,7 @@ export function startOAuthServer(callbackPath: string): OAuthServerResult {
     setTimeout(() => server.close(), 500)
   })
 
-  server = app.listen(0) // OS-assigned random port
+  server = app.listen(47391)
   const port = (server.address() as { port: number }).port
 
   return { port, code }

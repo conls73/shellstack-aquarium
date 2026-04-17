@@ -1,12 +1,13 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 import { getDB } from './db'
 import { POLL_GMAIL_MS } from '../../shared/constants'
 import type { FishService } from './fish.service'
-import { startOAuthServer } from '../oauth-server'
+import { waitForDeepLink } from '../deep-link'
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const GMAIL_LABEL_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/labels/INBOX'
+const REDIRECT_URI = 'shellstack://oauth/gmail/callback'
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? ''
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? ''
@@ -25,21 +26,21 @@ export class GmailService {
   }
 
   async startOAuth(win: BrowserWindow) {
-    const { port, code } = await startOAuthServer('/gmail/callback')
-    const redirectUri = `http://localhost:${port}/gmail/callback`
     const url =
       `${GOOGLE_AUTH_URL}?client_id=${CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
       `&response_type=code` +
       `&scope=${encodeURIComponent('https://www.googleapis.com/auth/gmail.readonly')}` +
       `&access_type=offline&prompt=consent`
 
-    const { shell } = await import('electron')
     shell.openExternal(url)
 
     try {
-      const authCode = await code
-      await this.exchangeCode(authCode, redirectUri)
+      const deepLinkUrl = await waitForDeepLink('gmail/callback')
+      const parsed = new URL(deepLinkUrl)
+      const code = parsed.searchParams.get('code')
+      if (!code) throw new Error('No code in callback')
+      await this.exchangeCode(code)
       win.webContents.send('oauth:complete', { provider: 'gmail', success: true })
       this.startPolling(win)
     } catch (err) {
@@ -47,7 +48,7 @@ export class GmailService {
     }
   }
 
-  private async exchangeCode(code: string, redirectUri: string) {
+  private async exchangeCode(code: string) {
     const resp = await fetch(GOOGLE_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -55,7 +56,7 @@ export class GmailService {
         code,
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
-        redirect_uri: redirectUri,
+        redirect_uri: REDIRECT_URI,
         grant_type: 'authorization_code',
       }),
     })

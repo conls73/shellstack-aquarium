@@ -6,6 +6,12 @@ import { registerIPC } from './ipc/index'
 import { FishService } from './services/fish.service'
 import { SlackService } from './services/slack.service'
 import { GmailService } from './services/gmail.service'
+import { setupDeepLinks } from './deep-link'
+
+// Single-instance lock required for Windows deep-link handling
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
 
 let mainWindow: BrowserWindow | null = null
 
@@ -51,6 +57,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  setupDeepLinks()
   initDB()
 
   const win = createWindow()

@@ -1,14 +1,14 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 import { getDB } from './db'
 import { POLL_SLACK_MS } from '../../shared/constants'
 import type { FishService } from './fish.service'
-import { startOAuthServer } from '../oauth-server'
+import { waitForDeepLink } from '../deep-link'
 
 const SLACK_AUTHORIZE_URL = 'https://slack.com/oauth/v2/authorize'
 const SLACK_TOKEN_URL = 'https://slack.com/api/oauth.v2.access'
 const SLACK_SCOPES = 'channels:read,groups:read,im:read,mpim:read'
+const REDIRECT_URI = 'shellstack://oauth/slack/callback'
 
-// Set via environment or .env — users register their own Slack app
 const CLIENT_ID = process.env.SLACK_CLIENT_ID ?? ''
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET ?? ''
 
@@ -26,21 +26,20 @@ export class SlackService {
   }
 
   async startOAuth(win: BrowserWindow) {
-    const { port, code } = await startOAuthServer('/slack/callback')
-    const redirectUri = `http://localhost:${port}/slack/callback`
     const url =
       `${SLACK_AUTHORIZE_URL}?client_id=${CLIENT_ID}` +
       `&scope=${encodeURIComponent(SLACK_SCOPES)}` +
       `&user_scope=identity.basic` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}`
+      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
 
-    win.webContents.send('oauth:opening', { provider: 'slack', url })
-    const { shell } = await import('electron')
     shell.openExternal(url)
 
     try {
-      const authCode = await code
-      await this.exchangeCode(authCode, redirectUri)
+      const deepLinkUrl = await waitForDeepLink('slack/callback')
+      const parsed = new URL(deepLinkUrl)
+      const code = parsed.searchParams.get('code')
+      if (!code) throw new Error('No code in callback')
+      await this.exchangeCode(code)
       win.webContents.send('oauth:complete', { provider: 'slack', success: true })
       this.startPolling(win)
     } catch (err) {
@@ -48,7 +47,7 @@ export class SlackService {
     }
   }
 
-  private async exchangeCode(code: string, redirectUri: string) {
+  private async exchangeCode(code: string) {
     const resp = await fetch(SLACK_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -56,7 +55,7 @@ export class SlackService {
         client_id: CLIENT_ID,
         client_secret: CLIENT_SECRET,
         code,
-        redirect_uri: redirectUri,
+        redirect_uri: REDIRECT_URI,
       }),
     })
     const data = (await resp.json()) as {
@@ -82,7 +81,7 @@ export class SlackService {
       })
       const data = (await resp.json()) as {
         ok: boolean
-        channels?: { id: string; user: string; is_im: boolean; unread_count_display?: number; name?: string }[]
+        channels?: { id: string; user: string; is_im: boolean; unread_count_display?: number }[]
       }
       if (!data.ok || !data.channels) return
 
