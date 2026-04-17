@@ -25,7 +25,7 @@ function neglectToBehavior(score: number): FishBehaviorState {
 }
 
 export class FishService {
-  private isLicensed = false
+  private isLicensed = true
 
   setLicensed(value: boolean) {
     this.isLicensed = value

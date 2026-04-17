@@ -7,6 +7,7 @@ import { FishService } from './services/fish.service'
 import { SlackService } from './services/slack.service'
 import { GmailService } from './services/gmail.service'
 import { setupDeepLinks } from './deep-link'
+import { startNotificationServer } from './notification-server'
 
 // Single-instance lock required for Windows deep-link handling
 if (!app.requestSingleInstanceLock()) {
@@ -67,6 +68,7 @@ app.whenReady().then(() => {
 
   setupTray(win)
   registerIPC(win, fishService, slackService, gmailService)
+  startNotificationServer(fishService, win)
 
   fishService.startPolling(win)
 })

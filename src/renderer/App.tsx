@@ -1,8 +1,6 @@
-import { useEffect, Component, type ReactNode } from 'react'
+import { Component, type ReactNode } from 'react'
 import AquariumCanvas from './aquarium/AquariumCanvas'
-import PaywallModal from './ui/PaywallModal'
 import SettingsDrawer from './ui/SettingsDrawer'
-import { useLicenseStore } from './store/licenseStore'
 import { useFishSync } from './hooks/useFishSync'
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -24,12 +22,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 }
 
 export default function App() {
-  const { isLicensed, trialMode, checkLicense } = useLicenseStore()
   useFishSync()
-
-  useEffect(() => {
-    checkLicense()
-  }, [checkLicense])
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
@@ -38,7 +31,6 @@ export default function App() {
       </ErrorBoundary>
 
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
-        {trialMode && !isLicensed && <PaywallModal />}
         <SettingsDrawer />
       </div>
     </div>
