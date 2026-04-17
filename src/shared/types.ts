@@ -1,4 +1,4 @@
-export type FishType = 'angelfish' | 'goldfish'
+export type FishType = 'angelfish' | 'goldfish' | 'clownfish' | 'squid'
 export type FishSource = 'slack_dm' | 'gmail' | 'demo'
 export type FishBehaviorState = 'spawning' | 'idle' | 'annoyed' | 'crowding' | 'feeding'
 export type FishRenderer = 'procedural' | 'sprite'

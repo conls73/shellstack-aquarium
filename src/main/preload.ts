@@ -41,4 +41,7 @@ contextBridge.exposeInMainWorld('aquarium', {
 
   removeAllListeners: (channel: string) =>
     ipcRenderer.removeAllListeners(channel),
+
+  openExternal: (url: string) =>
+    ipcRenderer.send(IPC.SHELL_OPEN_EXTERNAL, url),
 })

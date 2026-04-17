@@ -5,7 +5,7 @@ import { createPhysics, updatePhysics } from './FishPhysics'
 import type { PhysicsState } from './FishPhysics'
 import { NEGLECT_ANNOYED_THRESHOLD } from '../../../shared/constants'
 import type { FishState } from '../../../shared/types'
-import { ANGELFISH_CONFIG, GOLDFISH_CONFIG } from '../../../shared/constants'
+import { ANGELFISH_CONFIG, GOLDFISH_CONFIG, CLOWNFISH_CONFIG, SQUID_CONFIG } from '../../../shared/constants'
 
 export interface FishEntity {
   container: Container
@@ -16,7 +16,8 @@ export interface FishEntity {
 }
 
 export function createFishEntity(initialState: FishState): FishEntity {
-  const cfg = initialState.fishType === 'angelfish' ? ANGELFISH_CONFIG : GOLDFISH_CONFIG
+  const CFG_MAP = { angelfish: ANGELFISH_CONFIG, goldfish: GOLDFISH_CONFIG, clownfish: CLOWNFISH_CONFIG, squid: SQUID_CONFIG }
+  const cfg = CFG_MAP[initialState.fishType] ?? GOLDFISH_CONFIG
 
   const outerContainer = new Container()
   outerContainer.eventMode = 'static'

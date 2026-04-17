@@ -2,7 +2,7 @@ import { getDB } from './db'
 import { LICENSE_OFFLINE_DAYS } from '../../shared/constants'
 import type { LicenseResult } from '../../shared/types'
 
-const LS_VALIDATE_URL = 'https://api.lemonsqueezy.com/v1/licenses/validate'
+const DODO_BASE = 'https://live.dodopayments.com'
 const OFFLINE_MS = LICENSE_OFFLINE_DAYS * 24 * 3600_000
 
 export async function checkLicense(): Promise<LicenseResult> {
@@ -21,15 +21,15 @@ export async function checkLicense(): Promise<LicenseResult> {
   }
 
   try {
-    const resp = await fetch(LS_VALIDATE_URL, {
+    const resp = await fetch(`${DODO_BASE}/licenses/validate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         license_key: row.key,
-        instance_id: row.instance_id,
+        license_key_instance_id: row.instance_id || null,
       }),
     })
-    const data = (await resp.json()) as { valid: boolean; error?: string }
+    const data = (await resp.json()) as { valid: boolean }
 
     if (data.valid) {
       db.prepare('UPDATE license SET is_valid = 1, validated_at = ? WHERE id = 1').run(Date.now())
@@ -48,25 +48,22 @@ export async function checkLicense(): Promise<LicenseResult> {
 
 export async function activateLicense(key: string): Promise<LicenseResult> {
   const db = getDB()
-  const { instance_id } = db.prepare('SELECT instance_id FROM license WHERE id = 1').get() as {
-    instance_id: string
-  }
 
   try {
-    const resp = await fetch('https://api.lemonsqueezy.com/v1/licenses/activate', {
+    const resp = await fetch(`${DODO_BASE}/licenses/activate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         license_key: key,
-        instance_name: 'ShellStack Aquarium',
-        instance_id,
+        name: 'ShellStack Aquarium',
       }),
     })
-    const data = (await resp.json()) as { activated: boolean; error?: string }
 
-    if (data.activated) {
-      db.prepare('UPDATE license SET key = ?, is_valid = 1, validated_at = ? WHERE id = 1').run(
+    if (resp.status === 201) {
+      const data = (await resp.json()) as { id: string }
+      db.prepare('UPDATE license SET key = ?, instance_id = ?, is_valid = 1, validated_at = ? WHERE id = 1').run(
         key,
+        data.id,
         Date.now()
       )
       return { valid: true, trialMode: false, key }

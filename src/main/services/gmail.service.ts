@@ -81,7 +81,7 @@ export class GmailService {
       const data = (await resp.json()) as { messagesUnread?: number }
       const count = data.messagesUnread ?? 0
       if (count > 0) {
-        this.fishService.upsertNotification('gmail_inbox', 'gmail', 'goldfish', count, 'Gmail Inbox')
+        this.fishService.upsertNotification('gmail_inbox', 'gmail', 'clownfish', count, 'Gmail Inbox')
       }
       this.fishService.pushUpdate(win)
     } catch {

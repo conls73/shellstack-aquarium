@@ -2,6 +2,8 @@ import { Assets, Container, Sprite, Ticker } from 'pixi.js'
 import type { FishType } from '../../../shared/types'
 import angelfishUrl from '../../assets/fish/angelfish.png'
 import goldfishUrl from '../../assets/fish/goldfish.png'
+import clownfishUrl from '../../assets/fish/clownfish.png'
+import squidUrl from '../../assets/fish/squid.png'
 
 interface SpriteFishOptions {
   fishType: FishType
@@ -17,12 +19,15 @@ export interface SpriteFishInstance {
 const SOURCE: Record<FishType, string> = {
   angelfish: angelfishUrl,
   goldfish: goldfishUrl,
+  clownfish: clownfishUrl,
+  squid: squidUrl,
 }
 
 const BASE_SCALE: Record<FishType, number> = {
-  // Large sprite assets are ~90-100px; scale them so fish read well on screen
   angelfish: 1.6,
   goldfish: 1.6,
+  clownfish: 1.6,
+  squid: 1.6,
 }
 
 export function createSpriteFish(options: SpriteFishOptions): SpriteFishInstance {

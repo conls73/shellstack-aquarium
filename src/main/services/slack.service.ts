@@ -90,7 +90,7 @@ export class SlackService {
         if (!ch.is_im) continue
         const count = ch.unread_count_display ?? 0
         if (count > 0) {
-          this.fishService.upsertNotification(`slack_dm_${ch.id}`, 'slack_dm', 'angelfish', count, ch.user)
+          this.fishService.upsertNotification(`slack_dm_${ch.id}`, 'slack_dm', 'squid', count, ch.user)
         }
       }
       this.fishService.pushUpdate(win)

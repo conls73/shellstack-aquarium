@@ -19,6 +19,7 @@ export const IPC = {
   SETTINGS_GET: 'settings:get',
   SETTINGS_SET: 'settings:set',
   WINDOW_SET_ALWAYS_ON_TOP: 'window:setAlwaysOnTop',
+  SHELL_OPEN_EXTERNAL: 'shell:openExternal',
 } as const
 
 export const DEMO_FISH_COUNT = 3
@@ -37,4 +38,20 @@ export const GOLDFISH_CONFIG = {
   hueShiftSpeed: 0.2,
   baseSpeed: 1.0,
   annoyedSpeedMultiplier: 2.5,
+}
+
+export const CLOWNFISH_CONFIG = {
+  fishType: 'clownfish' as const,
+  baseColor: 0xff6622,
+  hueShiftSpeed: 0.25,
+  baseSpeed: 1.1,
+  annoyedSpeedMultiplier: 2.8,
+}
+
+export const SQUID_CONFIG = {
+  fishType: 'squid' as const,
+  baseColor: 0xaa88ff,
+  hueShiftSpeed: 0.4,
+  baseSpeed: 0.9,
+  annoyedSpeedMultiplier: 3.2,
 }

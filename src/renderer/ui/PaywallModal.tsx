@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useLicenseStore } from '../store/licenseStore'
 import logoUrl from '../assets/ui/logo.png'
 
+const CHECKOUT_URL = 'https://test.checkout.dodopayments.com/buy/pdt_0NcuoqmzEM2rFkZCh4ahN?quantity=1'
+
 const styles: Record<string, React.CSSProperties> = {
   overlay: {
     position: 'absolute',
@@ -70,7 +72,23 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
     boxSizing: 'border-box',
   },
-  button: {
+  buyButton: {
+    width: '100%',
+    padding: '14px 0',
+    borderRadius: 10,
+    border: 'none',
+    background: 'linear-gradient(135deg, #0e7a4a 0%, #085c36 100%)',
+    color: '#e8fff4',
+    fontSize: 16,
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: 0.5,
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    boxShadow: '0 4px 20px rgba(20,160,80,0.3)',
+    transition: 'opacity 0.2s',
+    marginBottom: 12,
+  },
+  activateButton: {
     width: '100%',
     padding: '14px 0',
     borderRadius: 10,
@@ -114,6 +132,10 @@ export default function PaywallModal() {
     if (!success) setError('Invalid license key. Please check and try again.')
   }
 
+  const handleBuy = () => {
+    ;(window as any).aquarium.openExternal(CHECKOUT_URL)
+  }
+
   return (
     <div style={styles.overlay}>
       <div style={styles.plaque}>
@@ -131,14 +153,18 @@ export default function PaywallModal() {
         />
         <h1 style={styles.title}>ShellStack Aquarium</h1>
         <p style={styles.subtitle}>
-          Your notifications live here now. Slack DMs become angelfish.<br />
-          Emails become goldfish. Ignore them and they grow.
+          Your notifications live here now. Slack DMs become squids.<br />
+          Emails become clownfish. Ignore them and they grow.
         </p>
 
         <div style={styles.fishPreview}>
-          <div style={styles.fishChip}>🐟 Slack DMs → Angelfish</div>
-          <div style={styles.fishChip}>🐠 Gmail → Goldfish</div>
+          <div style={styles.fishChip}>🦑 Slack DMs → Squid</div>
+          <div style={styles.fishChip}>🤡 Gmail → Clownfish</div>
         </div>
+
+        <button style={styles.buyButton} onClick={handleBuy}>
+          Buy Now · $5 One-Time
+        </button>
 
         <input
           style={styles.input}
@@ -151,7 +177,7 @@ export default function PaywallModal() {
         {error && <div style={styles.errorMsg}>{error}</div>}
 
         <button
-          style={{ ...styles.button, opacity: loading ? 0.6 : 1 }}
+          style={{ ...styles.activateButton, opacity: loading ? 0.6 : 1 }}
           onClick={handleActivate}
           disabled={loading}
         >

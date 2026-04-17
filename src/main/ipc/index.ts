@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, ipcMain, shell } from 'electron'
 import { IPC } from '../../shared/constants'
 import { checkLicense, activateLicense } from '../services/license.service'
 import type { FishService } from '../services/fish.service'
@@ -63,5 +63,9 @@ export function registerIPC(
 
   ipcMain.on(IPC.WINDOW_SET_ALWAYS_ON_TOP, (_e, value: boolean) => {
     win.setAlwaysOnTop(value)
+  })
+
+  ipcMain.on(IPC.SHELL_OPEN_EXTERNAL, (_e, url: string) => {
+    shell.openExternal(url)
   })
 }
