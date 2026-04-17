@@ -124,9 +124,10 @@
     /* Features */
     .features {
       max-width: 1100px; margin: 0 auto; padding: 60px 24px 100px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      display: grid; grid-template-columns: repeat(2, 1fr);
       gap: 24px;
     }
+    .feature.full { grid-column: 1 / -1; }
     .feature {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -219,7 +220,7 @@
         <h3>Gmail → Clownfish</h3>
         <p>Unread emails swim as clownfish. Glance at your desktop to see what's waiting — no notification pings, no badge counts.</p>
       </div>
-      <div class="feature">
+      <div class="feature full">
         <div class="feature-icon" style="font-size: 3rem; line-height: 1; filter: none;">🐡</div>
         <h3>Neglected? They grow.</h3>
         <p>The longer you ignore a notification, the bigger and more restless its fish becomes. A gentle, beautiful reminder instead of a nagging badge.</p>
