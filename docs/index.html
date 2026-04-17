@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShellStack Aquarium — Your notifications, as fish.</title>
+  <meta name="description" content="A virtual desktop aquarium where your unread notifications swim around as fish. Slack DMs become angelfish, emails become goldfish. Ignore them, and they grow." />
+  <meta property="og:title" content="ShellStack Aquarium" />
+  <meta property="og:description" content="Your notifications live here now. Slack DMs become angelfish. Emails become goldfish. Ignore them and they grow." />
+  <meta property="og:image" content="https://shellstack.xyz/logo.png" />
+  <meta name="theme-color" content="#0a2540" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <style>
+    :root {
+      --bg-deep: #020b16;
+      --bg-mid: #051a2e;
+      --bg-light: #0e4060;
+      --accent: #88ccff;
+      --accent-warm: #ffd93d;
+      --text: #e8f4ff;
+      --muted: #88b8d8;
+      --panel: rgba(10, 40, 70, 0.6);
+      --border: rgba(80, 160, 220, 0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg-deep);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    body {
+      background:
+        radial-gradient(ellipse at 50% 30%, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-deep) 100%);
+      min-height: 100vh;
+    }
+    /* Floating bubbles backdrop */
+    .bubbles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .bubble {
+      position: absolute; bottom: -40px; width: 14px; height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(255,255,255,0.05) 70%, transparent);
+      animation: rise linear infinite;
+    }
+    @keyframes rise {
+      to { transform: translateY(-110vh) translateX(var(--drift, 20px)); opacity: 0; }
+    }
+
+    main { position: relative; z-index: 1; }
+
+    /* Hero */
+    .hero {
+      min-height: 90vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 24px 80px;
+      text-align: center;
+    }
+    .logo {
+      width: 220px; height: 220px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 8px 32px rgba(40, 120, 200, 0.5));
+      margin-bottom: 12px;
+      animation: bob 4s ease-in-out infinite;
+    }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #a8d4ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .tagline {
+      font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+      color: var(--muted); max-width: 620px; line-height: 1.5;
+      margin-bottom: 36px;
+    }
+    .cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 12px;
+      font-size: 1rem; font-weight: 600; text-decoration: none;
+      border: 1px solid transparent; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #1a6eb5 0%, #0d4a8a 100%);
+      color: var(--text);
+      box-shadow: 0 8px 24px rgba(20, 100, 200, 0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 32px rgba(20, 100, 200, 0.5); }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--panel); }
+    .price-note { margin-top: 18px; color: var(--muted); font-size: 0.95rem; }
+
+    /* Fish drift across hero */
+    .drift-fish {
+      position: absolute; image-rendering: pixelated;
+      opacity: 0.55; pointer-events: none;
+    }
+    .drift-fish.a {
+      width: 90px; top: 18%; left: -100px;
+      animation: swim-right 22s linear infinite;
+    }
+    .drift-fish.b {
+      width: 100px; top: 62%; right: -100px;
+      animation: swim-left 26s linear infinite;
+      animation-delay: -8s;
+    }
+    @keyframes swim-right { to { transform: translateX(calc(100vw + 200px)); } }
+    @keyframes swim-left  { to { transform: translateX(calc(-100vw - 200px)) scaleX(-1); } }
+
+    /* Features */
+    .features {
+      max-width: 1100px; margin: 0 auto; padding: 60px 24px 100px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .feature {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px 28px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .feature:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .feature-icon {
+      width: 64px; height: 64px;
+      image-rendering: pixelated;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    }
+    .feature h3 {
+      font-size: 1.25rem; margin-bottom: 10px; color: var(--text);
+    }
+    .feature p { color: var(--muted); line-height: 1.55; }
+
+    /* How it works */
+    .how {
+      max-width: 900px; margin: 0 auto; padding: 20px 24px 100px; text-align: center;
+    }
+    .how h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: 12px; letter-spacing: -0.02em;
+    }
+    .how .sub { color: var(--muted); margin-bottom: 48px; font-size: 1.05rem; }
+    .steps { display: grid; gap: 18px; text-align: left; }
+    .step {
+      display: flex; gap: 18px; padding: 20px 24px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .step-num {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a6eb5 0%, #0d4a8a 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem;
+    }
+    .step-body h4 { margin-bottom: 4px; font-size: 1.05rem; }
+    .step-body p { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+
+    /* Footer */
+    footer {
+      padding: 40px 24px 60px; text-align: center;
+      color: var(--muted); font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Small screens */
+    @media (max-width: 600px) {
+      .logo { width: 160px; height: 160px; }
+      .hero { padding: 40px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bubbles" aria-hidden="true"></div>
+
+  <main>
+    <section class="hero">
+      <img class="drift-fish a" src="angelfish.png" alt="" />
+      <img class="drift-fish b" src="goldfish.png" alt="" />
+
+      <img class="logo" src="logo.png" alt="ShellStack Aquarium logo" />
+      <h1>Your notifications,<br />as fish.</h1>
+      <p class="tagline">
+        ShellStack Aquarium is a virtual desktop overlay where your unread messages swim.
+        Slack DMs become angelfish. Emails become goldfish. Ignore them long enough, and they grow.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#buy" id="buyBtn">Buy for $5 · Coming soon</a>
+        <a class="btn btn-secondary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+      <p class="price-note">One-time purchase · 2 device activations · Windows</p>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <img class="feature-icon" src="angelfish.png" alt="" />
+        <h3>Slack DMs → Angelfish</h3>
+        <p>Every unread direct message becomes a colorful angelfish swimming in your aquarium. The more DMs pile up, the more fish appear.</p>
+      </div>
+      <div class="feature">
+        <img class="feature-icon" src="goldfish.png" alt="" />
+        <h3>Gmail → Goldfish</h3>
+        <p>Unread emails swim as goldfish. Glance at your desktop to see what's waiting — no notification pings, no badge counts.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="font-size: 3rem; line-height: 1; filter: none;">🐡</div>
+        <h3>Neglected? They grow.</h3>
+        <p>The longer you ignore a notification, the bigger and more restless its fish becomes. A gentle, beautiful reminder instead of a nagging badge.</p>
+      </div>
+    </section>
+
+    <section class="how">
+      <h2>How it works</h2>
+      <p class="sub">Set it up once. Then just glance at your desktop.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install the app</h4>
+            <p>Download for Windows, install, and it lives as a transparent overlay that floats above your desktop.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Connect Slack &amp; Gmail</h4>
+            <p>One-click OAuth. Read-only scopes — we never see message contents, only unread counts.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Watch your inbox swim</h4>
+            <p>Fish appear when messages are unread, grow as they age, and disappear when you reply.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 ShellStack · <a href="https://github.com/conls73/shellstack-aquarium">GitHub</a> · <a href="mailto:lifeofconls@gmail.com">Contact</a></p>
+  </footer>
+
+  <script>
+    // Spawn rising bubbles
+    (function () {
+      const container = document.querySelector('.bubbles');
+      const count = 30;
+      for (let i = 0; i < count; i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = 6 + Math.random() * 18;
+        b.style.width = b.style.height = size + 'px';
+        b.style.left = Math.random() * 100 + 'vw';
+        b.style.animationDuration = (8 + Math.random() * 12) + 's';
+        b.style.animationDelay = -(Math.random() * 12) + 's';
+        b.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        b.style.opacity = 0.3 + Math.random() * 0.4;
+        container.appendChild(b);
+      }
+    })();
+  </script>
+</body>
+</html>
