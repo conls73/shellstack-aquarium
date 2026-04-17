@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>You're in — ShellStack Aquarium</title>
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <style>
+    :root {
+      --bg-deep: #020b16;
+      --bg-mid: #051a2e;
+      --bg-light: #0e4060;
+      --accent: #88ccff;
+      --text: #e8f4ff;
+      --muted: #88b8d8;
+      --panel: rgba(10, 40, 70, 0.6);
+      --border: rgba(80, 160, 220, 0.35);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg-deep);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    body {
+      background: radial-gradient(ellipse at 50% 30%, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-deep) 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bubble {
+      position: absolute; bottom: -40px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(255,255,255,0.05) 70%, transparent);
+      animation: rise linear infinite;
+    }
+    @keyframes rise { to { transform: translateY(-110vh) translateX(var(--drift, 20px)); opacity: 0; } }
+
+    main { position: relative; z-index: 1; max-width: 560px; width: 100%; }
+
+    .logo {
+      width: 140px; height: 140px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 8px 32px rgba(40,120,200,0.5));
+      margin-bottom: 24px;
+      animation: bob 4s ease-in-out infinite;
+    }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #a8d4ff 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .subtitle {
+      font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5;
+    }
+
+    .steps {
+      display: grid; gap: 16px; text-align: left; margin-bottom: 36px;
+    }
+    .step {
+      display: flex; gap: 16px; padding: 20px 24px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+    .step-num {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a6eb5 0%, #0d4a8a 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem;
+    }
+    .step-body h4 { margin-bottom: 4px; font-size: 1rem; color: var(--text); }
+    .step-body p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+    .key-note {
+      background: var(--panel);
+      border: 1px solid rgba(80, 200, 120, 0.4);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 36px;
+      text-align: left;
+    }
+    .key-note-label {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
+      color: #66cc88; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .key-note p { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 12px;
+      font-size: 1rem; font-weight: 600; text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #1a6eb5 0%, #0d4a8a 100%);
+      color: var(--text);
+      box-shadow: 0 8px 24px rgba(20,100,200,0.35);
+    }
+
+    footer {
+      margin-top: 60px; color: var(--muted); font-size: 0.85rem;
+      position: relative; z-index: 1;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="bubbles" aria-hidden="true"></div>
+
+  <main>
+    <img class="logo" src="/logo.png" alt="ShellStack Aquarium logo" />
+    <h1>Your aquarium is ready.</h1>
+    <p class="subtitle">Thanks for purchasing ShellStack. Your license key is on its way — check your email.</p>
+
+    <div class="key-note">
+      <div class="key-note-label">Check your inbox</div>
+      <p>You'll receive an email from Dodo Payments with your license key. Copy it and follow the steps below to activate.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Download &amp; install ShellStack</h4>
+          <p>Grab the latest release from <a href="https://github.com/conls73/shellstack-aquarium/releases" style="color: var(--accent);">GitHub Releases</a> and install it on Windows.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Enter your license key</h4>
+          <p>Open the app — you'll see a prompt to enter your key. Paste it in and click <strong>Unlock Full Aquarium</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Connect Slack &amp; Gmail</h4>
+          <p>One-click OAuth in the settings drawer. Your fish will appear within a minute of connecting.</p>
+        </div>
+      </div>
+    </div>
+
+    <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium/releases" target="_blank" rel="noopener">
+      Download ShellStack
+    </a>
+  </main>
+
+  <footer>
+    <p>© 2026 ShellStack · <a href="mailto:lifeofconls@gmail.com">Need help? Contact us</a></p>
+  </footer>
+
+  <script>
+    (function () {
+      const container = document.querySelector('.bubbles');
+      for (let i = 0; i < 25; i++) {
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = 6 + Math.random() * 16;
+        b.style.width = b.style.height = size + 'px';
+        b.style.left = Math.random() * 100 + 'vw';
+        b.style.animationDuration = (8 + Math.random() * 12) + 's';
+        b.style.animationDelay = -(Math.random() * 12) + 's';
+        b.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        b.style.opacity = 0.3 + Math.random() * 0.4;
+        container.appendChild(b);
+      }
+    })();
+  </script>
+</body>
+</html>
