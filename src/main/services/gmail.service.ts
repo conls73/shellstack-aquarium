@@ -7,7 +7,7 @@ import { waitForDeepLink } from '../deep-link'
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const GMAIL_LABEL_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/labels/INBOX'
-const REDIRECT_URI = 'shellstack://oauth/gmail/callback'
+const REDIRECT_URI = 'https://shellstack.xyz/oauth/gmail/callback'
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? ''
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? ''

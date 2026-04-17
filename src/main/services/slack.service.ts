@@ -7,7 +7,7 @@ import { waitForDeepLink } from '../deep-link'
 const SLACK_AUTHORIZE_URL = 'https://slack.com/oauth/v2/authorize'
 const SLACK_TOKEN_URL = 'https://slack.com/api/oauth.v2.access'
 const SLACK_SCOPES = 'channels:read,groups:read,im:read,mpim:read'
-const REDIRECT_URI = 'shellstack://oauth/slack/callback'
+const REDIRECT_URI = 'https://shellstack.xyz/oauth/slack/callback'
 
 const CLIENT_ID = process.env.SLACK_CLIENT_ID ?? ''
 const CLIENT_SECRET = process.env.SLACK_CLIENT_SECRET ?? ''

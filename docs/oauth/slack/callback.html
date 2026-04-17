@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Connecting Slack…</title>
+  <style>
+    body { background: #020b16; color: #88ccff; font-family: system-ui, sans-serif;
+      display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div>
+    <p style="font-size:1.2rem">Connecting Slack to ShellStack…</p>
+    <p style="color:#557799;margin-top:8px">You can close this window.</p>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const error = params.get('error')
+    if (code) {
+      window.location.href = 'shellstack://oauth/slack/callback?code=' + encodeURIComponent(code)
+    } else {
+      document.querySelector('p').textContent = 'Authorization failed: ' + (error || 'unknown error')
+    }
+  </script>
+</body>
+</html>
