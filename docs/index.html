@@ -13,7 +13,6 @@
   <style>
     :root {
       --bg: #020b16;
-      --mid: #051a2e;
       --accent: #88ccff;
       --text: #e8f4ff;
       --muted: #88b8d8;
@@ -29,14 +28,10 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Aquarium canvas ── */
     #tank {
       position: fixed; inset: 0; z-index: 0;
-      background: linear-gradient(180deg,
-        #020d1f 0%, #041628 20%, #051e35 50%, #041628 80%, #020d1f 100%);
+      background: linear-gradient(180deg, #020d1f 0%, #041628 20%, #051e35 50%, #041628 80%, #020d1f 100%);
     }
-
-    /* caustic light rays */
     #tank::before {
       content: '';
       position: absolute; inset: 0;
@@ -51,20 +46,34 @@
       0%   { opacity: 0.6; transform: scaleX(1); }
       100% { opacity: 1;   transform: scaleX(1.04); }
     }
-
     canvas#fish-canvas {
-      position: absolute; inset: 0; width: 100%; height: 100%;
+      position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair;
     }
 
-    /* ── Page content ── */
-    .page { position: relative; z-index: 1; }
+    /* Hide UI toggle button */
+    #toggle-ui {
+      position: fixed; bottom: 24px; right: 24px; z-index: 100;
+      background: rgba(5,20,40,0.85); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 8px 14px; border-radius: 20px;
+      cursor: pointer; backdrop-filter: blur(12px);
+      transition: color 0.2s, border-color 0.2s;
+      font-family: inherit;
+    }
+    #toggle-ui:hover { color: var(--text); border-color: var(--accent); }
 
-    /* Hero */
+    /* Page content */
+    .page {
+      position: relative; z-index: 1;
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .page.hidden { opacity: 0; pointer-events: none; transform: translateY(12px); }
+
     .hero {
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 60px 24px 40px;
-      text-align: center;
+      padding: 60px 24px 40px; text-align: center;
     }
     .logo {
       width: 180px; height: 180px; image-rendering: pixelated;
@@ -76,8 +85,7 @@
 
     h1 {
       font-size: clamp(2.6rem, 7vw, 5rem);
-      font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
-      margin-bottom: 16px;
+      font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 16px;
       background: linear-gradient(180deg, #fff 0%, #7ec8ff 100%);
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
@@ -86,12 +94,9 @@
       color: var(--muted); max-width: 580px; line-height: 1.6; margin-bottom: 48px;
     }
 
-    /* ── Live demo panel ── */
     .demo-panel {
-      background: rgba(5,20,40,0.85);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 32px 40px 36px;
+      background: rgba(5,20,40,0.85); border: 1px solid var(--border);
+      border-radius: 24px; padding: 32px 40px 36px;
       max-width: 520px; width: 100%;
       backdrop-filter: blur(20px);
       box-shadow: 0 0 80px rgba(20,80,160,0.25), inset 0 1px 0 rgba(120,200,255,0.08);
@@ -101,9 +106,7 @@
       font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
       text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0.7;
     }
-    .slider-row {
-      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
-    }
+    .slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
     .slider-label {
       display: flex; align-items: center; gap: 8px;
       width: 120px; flex-shrink: 0; font-size: 0.9rem; color: var(--text);
@@ -118,8 +121,7 @@
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
       background: linear-gradient(135deg, #3399ff, #1a6eb5);
-      box-shadow: 0 2px 8px rgba(20,100,200,0.5);
-      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(20,100,200,0.5); cursor: pointer;
     }
     .slider-val {
       width: 28px; text-align: right; font-weight: 700;
@@ -131,8 +133,10 @@
       font-size: 0.85rem; color: var(--muted); line-height: 1.5; text-align: center;
       min-height: 44px;
     }
+    .hint {
+      margin-top: 10px; font-size: 0.75rem; color: rgba(136,184,216,0.5); text-align: center;
+    }
 
-    /* ── Features ── */
     .features {
       max-width: 1100px; margin: 0 auto; padding: 80px 24px 100px;
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
@@ -149,31 +153,6 @@
     .feature h3 { font-size: 1.2rem; margin-bottom: 8px; }
     .feature p { color: var(--muted); line-height: 1.55; font-size: 0.95rem; }
 
-    /* ── How it works ── */
-    .how { max-width: 860px; margin: 0 auto; padding: 0 24px 100px; text-align: center; }
-    .how h2 { font-size: clamp(1.8rem,4vw,2.6rem); margin-bottom: 10px; letter-spacing:-0.02em; }
-    .how .sub { color: var(--muted); margin-bottom: 40px; font-size: 1rem; }
-    .steps { display: grid; gap: 14px; text-align: left; }
-    .step {
-      display: flex; gap: 16px; padding: 18px 22px;
-      background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
-      backdrop-filter: blur(10px);
-    }
-    .step-num {
-      flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
-      background: linear-gradient(135deg,#1a6eb5,#0d4a8a);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.9rem;
-    }
-    .step-body h4 { margin-bottom: 3px; font-size: 0.98rem; }
-    .step-body p { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
-
-    /* ── CTA ── */
-    .cta-section {
-      text-align: center; padding: 0 24px 120px;
-    }
-    .cta-section h2 { font-size: clamp(1.6rem,4vw,2.4rem); margin-bottom: 10px; letter-spacing:-0.02em; }
-    .cta-section p { color: var(--muted); margin-bottom: 28px; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 14px 28px; border-radius: 12px; font-size: 1rem;
@@ -186,15 +165,20 @@
       color: var(--text); box-shadow: 0 8px 24px rgba(20,100,200,0.35);
     }
     .btn-secondary {
-      background: transparent; color: var(--text); border-color: var(--border); margin-left: 12px;
+      background: transparent; color: var(--text); border-color: var(--border);
     }
     .btn-secondary:hover { background: var(--panel); }
+    .btn-coffee {
+      background: linear-gradient(135deg, #ffdd57, #f0a500);
+      color: #1a1000;
+    }
 
     footer {
-      padding: 32px 24px 48px; text-align: center;
+      padding: 40px 24px 60px; text-align: center;
       color: var(--muted); font-size: 0.88rem;
       border-top: 1px solid var(--border);
       position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
     }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
@@ -209,13 +193,13 @@
 </head>
 <body>
 
-<!-- Aquarium background -->
 <div id="tank">
   <canvas id="fish-canvas"></canvas>
 </div>
 
-<div class="page">
-  <!-- Hero -->
+<button id="toggle-ui">Hide UI</button>
+
+<div class="page" id="page">
   <section class="hero">
     <img class="logo" src="/logo.png" alt="ShellStack" />
     <h1>Your notifications,<br/>as fish.</h1>
@@ -224,10 +208,8 @@
       Ignore them long enough — and they grow.
     </p>
 
-    <!-- Live demo -->
     <div class="demo-panel">
       <div class="demo-title">⬇ Live demo — drag the sliders</div>
-
       <div class="slider-row">
         <div class="slider-label">
           <img class="fish-icon" src="/clownfish.png" alt="" /> Gmail
@@ -235,7 +217,6 @@
         <input type="range" id="gmail-slider" min="0" max="50" value="0" />
         <div class="slider-val" id="gmail-val">0</div>
       </div>
-
       <div class="slider-row">
         <div class="slider-label">
           <img class="fish-icon" src="/squid.png" alt="" /> Slack
@@ -243,23 +224,15 @@
         <input type="range" id="slack-slider" min="0" max="50" value="0" />
         <div class="slider-val" id="slack-val">0</div>
       </div>
-
-      <div class="fish-status" id="fish-status">
-        Drag a slider to spawn your fish →
-      </div>
+      <div class="fish-status" id="fish-status">Drag a slider to spawn your fish →</div>
+      <div class="hint">Click a fish to dismiss it</div>
     </div>
 
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-      <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">
-        View on GitHub
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/conls73/shellstack-aquarium/releases" target="_blank" rel="noopener">
-        Download for Windows
-      </a>
-    </div>
+    <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">
+      View on GitHub
+    </a>
   </section>
 
-  <!-- Features -->
   <section class="features">
     <div class="feature">
       <img class="feature-icon" src="/squid.png" alt="" />
@@ -278,124 +251,65 @@
     </div>
   </section>
 
-  <!-- How it works -->
-  <section class="how">
-    <h2>How it works</h2>
-    <p class="sub">Set it up once. Then just glance at your desktop.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h4>Install the app</h4>
-          <p>Download for Windows. It runs as a transparent overlay on your desktop.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h4>Install the Chrome extension</h4>
-          <p>The extension watches your Gmail and Slack tabs and sends unread counts to the app.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h4>Watch your inbox swim</h4>
-          <p>Fish appear when messages are unread, grow as they age, and vanish when you reply.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta-section">
-    <h2>Free & open source.</h2>
-    <p>No subscription. No account. Just fish.</p>
-    <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium/releases" target="_blank" rel="noopener">
-      Download ShellStack
-    </a>
-    <a class="btn btn-secondary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">
-      Star on GitHub ★
-    </a>
-  </section>
-
   <footer>
+    <a class="btn btn-coffee" href="https://buymeacoffee.com/conls" target="_blank" rel="noopener">
+      ☕ Buy me a coffee
+    </a>
     <p>© 2026 ShellStack · <a href="https://github.com/conls73/shellstack-aquarium">GitHub</a> · <a href="mailto:lifeofconls@gmail.com">Contact</a></p>
   </footer>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-//  Fish aquarium engine
-// ─────────────────────────────────────────────
 (function () {
   const canvas = document.getElementById('fish-canvas')
   const ctx = canvas.getContext('2d')
 
-  // Load sprites
   const sprites = {}
   function loadImg(key, src) {
-    const img = new Image()
-    img.src = src
-    sprites[key] = img
-    return img
+    const img = new Image(); img.src = src; sprites[key] = img
   }
   loadImg('clownfish', '/clownfish.png')
   loadImg('squid', '/squid.png')
 
-  // Resize
-  function resize() {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-  }
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
   resize()
   window.addEventListener('resize', resize)
 
-  // Fish state
-  let fish = []
-  let gmailCount = 0
-  let slackCount = 0
+  let fish = [], gmailCount = 0, slackCount = 0
   const MAX_FISH = 30
 
   function spawnFish(type) {
     const side = Math.random() < 0.5 ? 'left' : 'right'
     const speed = 0.6 + Math.random() * 0.8
     return {
-      type,
+      type, id: Math.random(),
       x: side === 'left' ? -80 : canvas.width + 80,
       y: 80 + Math.random() * (canvas.height - 160),
       vx: side === 'left' ? speed : -speed,
       vy: (Math.random() - 0.5) * 0.4,
       phase: Math.random() * Math.PI * 2,
       phaseSpeed: 0.02 + Math.random() * 0.02,
-      size: 0.5 + Math.random() * 0.5, // base size — grows with neglect
-      neglect: 0,
+      size: 0.5 + Math.random() * 0.5,
       spawnedAt: Date.now(),
-      opacity: 0,
+      opacity: 0, dying: false,
     }
   }
 
   function syncFish() {
-    const desired = {
-      clownfish: Math.min(gmailCount, MAX_FISH),
-      squid: Math.min(slackCount, MAX_FISH),
-    }
+    const desired = { clownfish: Math.min(gmailCount, MAX_FISH), squid: Math.min(slackCount, MAX_FISH) }
     for (const type of ['clownfish', 'squid']) {
-      const current = fish.filter(f => f.type === type).length
+      const current = fish.filter(f => f.type === type && !f.dying).length
       const diff = desired[type] - current
-      if (diff > 0) {
-        for (let i = 0; i < diff; i++) fish.push(spawnFish(type))
-      } else if (diff < 0) {
+      if (diff > 0) for (let i = 0; i < diff; i++) fish.push(spawnFish(type))
+      else if (diff < 0) {
         let removed = 0
-        fish = fish.filter(f => {
-          if (f.type === type && removed < -diff) { removed++; return false }
-          return true
-        })
+        for (const f of fish) {
+          if (f.type === type && !f.dying && removed < -diff) { f.dying = true; removed++ }
+        }
       }
     }
   }
 
-  // Bubble particles
   const bubbles = Array.from({ length: 40 }, () => ({
     x: Math.random() * window.innerWidth,
     y: window.innerHeight + Math.random() * 200,
@@ -405,62 +319,70 @@
     opacity: 0.1 + Math.random() * 0.25,
   }))
 
-  // Ambient demo fish (always swimming, no slider)
   const ambientFish = Array.from({ length: 6 }, (_, i) => {
-    const types = ['clownfish', 'squid', 'clownfish', 'squid', 'clownfish', 'squid']
-    return { ...spawnFish(types[i]), size: 0.4 + Math.random() * 0.3, isAmbient: true, opacity: 0.3 }
+    const types = ['clownfish','squid','clownfish','squid','clownfish','squid']
+    return { ...spawnFish(types[i]), size: 0.4 + Math.random() * 0.3, isAmbient: true, opacity: 0.3, dying: false }
   })
 
-  // Render loop
+  // Click to dismiss fish
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect()
+    const mx = e.clientX - rect.left
+    const my = e.clientY - rect.top
+    let closest = null, closestDist = 60
+    for (const f of fish) {
+      if (f.dying) continue
+      const dist = Math.hypot(f.x - mx, f.y - my)
+      const hitRadius = 32 * f.size * 1.2
+      if (dist < hitRadius && dist < closestDist) { closest = f; closestDist = dist }
+    }
+    if (closest) {
+      closest.dying = true
+      // Adjust slider
+      if (closest.type === 'clownfish') {
+        gmailCount = Math.max(0, gmailCount - 1)
+        gmailSlider.value = gmailCount
+        updateSlider(gmailSlider, gmailVal)
+      } else {
+        slackCount = Math.max(0, slackCount - 1)
+        slackSlider.value = slackCount
+        updateSlider(slackSlider, slackVal)
+      }
+      updateStatus()
+    }
+  })
+
   let lastTime = 0
   function draw(ts) {
     const dt = Math.min((ts - lastTime) / 16.67, 3)
     lastTime = ts
-
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    // Bubbles
     for (const b of bubbles) {
-      b.y -= b.speed * dt
-      b.x += b.drift * dt
-      if (b.y < -20) {
-        b.y = canvas.height + 20
-        b.x = Math.random() * canvas.width
-      }
-      ctx.beginPath()
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2)
-      const g = ctx.createRadialGradient(b.x - b.r * 0.3, b.y - b.r * 0.3, 0, b.x, b.y, b.r)
-      g.addColorStop(0, `rgba(200,230,255,${b.opacity * 1.5})`)
-      g.addColorStop(1, `rgba(100,180,255,0)`)
-      ctx.fillStyle = g
-      ctx.fill()
+      b.y -= b.speed * dt; b.x += b.drift * dt
+      if (b.y < -20) { b.y = canvas.height + 20; b.x = Math.random() * canvas.width }
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2)
+      const g = ctx.createRadialGradient(b.x-b.r*0.3, b.y-b.r*0.3, 0, b.x, b.y, b.r)
+      g.addColorStop(0, `rgba(200,230,255,${b.opacity*1.5})`); g.addColorStop(1, `rgba(100,180,255,0)`)
+      ctx.fillStyle = g; ctx.fill()
     }
 
-    // Draw a fish
-    function drawFish(f, alpha) {
+    function drawFish(f, maxAlpha) {
       f.phase += f.phaseSpeed * dt
-      const neglectAge = (Date.now() - f.spawnedAt) / 60000 // minutes
-      const baseNeglect = f.neglect + neglectAge * 0.1
+      if (f.dying) { f.opacity -= 0.03 * dt; if (f.opacity <= 0) { f.opacity = 0; return } }
+      else f.opacity = Math.min(f.opacity + 0.01 * dt, maxAlpha)
+
+      const neglectAge = (Date.now() - f.spawnedAt) / 60000
+      const baseNeglect = neglectAge * 0.1
       const sizeScale = f.size * (1 + baseNeglect * 0.15)
-      const w = 64 * sizeScale
-      const h = 64 * sizeScale
+      const w = 64 * sizeScale, h = 64 * sizeScale
 
-      // Swim
       f.x += f.vx * dt
-      f.vy += (Math.random() - 0.5) * 0.02 * dt
-      f.vy *= 0.98
-      f.y += f.vy * dt
-
-      // Bounce off edges
+      f.vy += (Math.random() - 0.5) * 0.02 * dt; f.vy *= 0.98; f.y += f.vy * dt
       if (f.y < 60) f.vy += 0.1
       if (f.y > canvas.height - 60) f.vy -= 0.1
-
-      // Wrap horizontally
       if (f.vx > 0 && f.x > canvas.width + 100) f.x = -100
       if (f.vx < 0 && f.x < -100) f.x = canvas.width + 100
-
-      // Fade in
-      f.opacity = Math.min(f.opacity + 0.01 * dt, alpha)
 
       const img = sprites[f.type]
       if (!img.complete) return
@@ -468,39 +390,26 @@
       ctx.save()
       ctx.globalAlpha = f.opacity
       ctx.translate(f.x, f.y)
-
-      // Wiggle
-      const wiggleRot = Math.sin(f.phase * 1.5) * (0.04 + baseNeglect * 0.02)
-      ctx.rotate(wiggleRot)
-
-      // Flip based on direction
+      ctx.rotate(Math.sin(f.phase * 1.5) * (0.04 + baseNeglect * 0.02))
       if (f.vx > 0) ctx.scale(-1, 1)
-
-      // Squash/stretch
-      const scaleY = 1 + Math.sin(f.phase * 3) * 0.04
-      ctx.scale(1, scaleY)
-
-      // Glow for neglected fish
+      ctx.scale(1, 1 + Math.sin(f.phase * 3) * 0.04)
       if (baseNeglect > 1) {
         ctx.shadowColor = f.type === 'clownfish' ? '#ff6622' : '#aa88ff'
         ctx.shadowBlur = 10 + baseNeglect * 5
       }
-
-      ctx.drawImage(img, -w / 2, -h / 2, w, h)
+      ctx.drawImage(img, -w/2, -h/2, w, h)
       ctx.restore()
     }
 
-    // Ambient fish
     for (const f of ambientFish) drawFish(f, 0.25)
-
-    // User fish
     for (const f of fish) drawFish(f, 0.85)
+    fish = fish.filter(f => !(f.dying && f.opacity <= 0))
 
     requestAnimationFrame(draw)
   }
   requestAnimationFrame(draw)
 
-  // ── Sliders ──
+  // Sliders
   const gmailSlider = document.getElementById('gmail-slider')
   const slackSlider = document.getElementById('slack-slider')
   const gmailVal = document.getElementById('gmail-val')
@@ -514,44 +423,32 @@
     'Things are getting crowded. Reply to something!',
     'Complete chaos. Your fish are enormous.',
   ]
-
   function updateStatus() {
     const total = gmailCount + slackCount
-    const idx = total === 0 ? 0 : total < 5 ? 1 : total < 15 ? 2 : total < 30 ? 3 : 4
-    statusEl.textContent = statuses[idx]
+    statusEl.textContent = statuses[total===0?0:total<5?1:total<15?2:total<30?3:4]
   }
-
   function updateSlider(el, valEl) {
-    const v = parseInt(el.value)
-    const max = parseInt(el.max)
-    el.style.setProperty('--pct', (v / max * 100) + '%')
-    valEl.textContent = v
-    return v
+    const v = parseInt(el.value), max = parseInt(el.max)
+    el.style.setProperty('--pct', (v/max*100)+'%'); valEl.textContent = v; return v
   }
+  gmailSlider.addEventListener('input', () => { gmailCount = updateSlider(gmailSlider, gmailVal); syncFish(); updateStatus() })
+  slackSlider.addEventListener('input', () => { slackCount = updateSlider(slackSlider, slackVal); syncFish(); updateStatus() })
 
-  gmailSlider.addEventListener('input', () => {
-    gmailCount = updateSlider(gmailSlider, gmailVal)
-    syncFish()
-    updateStatus()
-  })
-  slackSlider.addEventListener('input', () => {
-    slackCount = updateSlider(slackSlider, slackVal)
-    syncFish()
-    updateStatus()
-  })
-
-  // Kick off a gentle intro animation
   setTimeout(() => {
-    gmailSlider.value = 4
-    gmailCount = 4
-    updateSlider(gmailSlider, gmailVal)
-    slackSlider.value = 3
-    slackCount = 3
-    updateSlider(slackSlider, slackVal)
-    syncFish()
-    updateStatus()
+    gmailSlider.value = 4; gmailCount = 4; updateSlider(gmailSlider, gmailVal)
+    slackSlider.value = 3; slackCount = 3; updateSlider(slackSlider, slackVal)
+    syncFish(); updateStatus()
   }, 1800)
 
+  // Toggle UI
+  const toggleBtn = document.getElementById('toggle-ui')
+  const page = document.getElementById('page')
+  let uiVisible = true
+  toggleBtn.addEventListener('click', () => {
+    uiVisible = !uiVisible
+    page.classList.toggle('hidden', !uiVisible)
+    toggleBtn.textContent = uiVisible ? 'Hide UI' : 'Show UI'
+  })
 })()
 </script>
 </body>
