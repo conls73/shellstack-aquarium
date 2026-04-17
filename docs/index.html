@@ -50,18 +50,17 @@
       position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair;
     }
 
-    /* Hide UI toggle button */
-    #toggle-ui {
-      position: fixed; bottom: 24px; right: 24px; z-index: 100;
-      background: rgba(5,20,40,0.85); border: 1px solid var(--border);
-      color: var(--muted); font-size: 0.78rem; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 8px 14px; border-radius: 20px;
-      cursor: pointer; backdrop-filter: blur(12px);
-      transition: color 0.2s, border-color 0.2s;
-      font-family: inherit;
+    /* Floating counter shown when UI is hidden */
+    #float-counter {
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: none;
+      background: rgba(5,20,40,0.88); border: 1px solid var(--border);
+      border-radius: 20px; padding: 8px 20px;
+      font-size: 0.9rem; font-weight: 600; color: var(--accent);
+      backdrop-filter: blur(12px); gap: 16px;
+      pointer-events: none;
     }
-    #toggle-ui:hover { color: var(--text); border-color: var(--accent); }
+    #float-counter.visible { display: flex; align-items: center; }
 
     /* Page content */
     .page {
@@ -197,7 +196,10 @@
   <canvas id="fish-canvas"></canvas>
 </div>
 
-<button id="toggle-ui">Hide UI</button>
+<div id="float-counter">
+  <span>🤡 <span id="fc-gmail">0</span></span>
+  <span>🦑 <span id="fc-slack">0</span></span>
+</div>
 
 <div class="page" id="page">
   <section class="hero">
@@ -228,9 +230,12 @@
       <div class="hint">Click a fish to dismiss it</div>
     </div>
 
-    <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">
-      View on GitHub
-    </a>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+      <a class="btn btn-primary" href="https://github.com/conls73/shellstack-aquarium" target="_blank" rel="noopener">
+        View on GitHub
+      </a>
+      <button class="btn btn-secondary" id="toggle-ui">Hide UI</button>
+    </div>
   </section>
 
   <section class="features">
@@ -255,7 +260,7 @@
     <a class="btn btn-coffee" href="https://buymeacoffee.com/conls" target="_blank" rel="noopener">
       ☕ Buy me a coffee
     </a>
-    <p>© 2026 ShellStack · <a href="https://github.com/conls73/shellstack-aquarium">GitHub</a> · <a href="mailto:lifeofconls@gmail.com">Contact</a></p>
+    <p>© 2026 ShellStack · <a href="https://github.com/conls73/shellstack-aquarium">GitHub</a> · <a href="https://linktr.ee/lifeofconls" target="_blank" rel="noopener">Linktree</a></p>
   </footer>
 </div>
 
@@ -443,12 +448,28 @@
   // Toggle UI
   const toggleBtn = document.getElementById('toggle-ui')
   const page = document.getElementById('page')
+  const floatCounter = document.getElementById('float-counter')
+  const fcGmail = document.getElementById('fc-gmail')
+  const fcSlack = document.getElementById('fc-slack')
   let uiVisible = true
+
+  function updateFloatCounter() {
+    fcGmail.textContent = gmailCount
+    fcSlack.textContent = slackCount
+  }
+
   toggleBtn.addEventListener('click', () => {
     uiVisible = !uiVisible
     page.classList.toggle('hidden', !uiVisible)
     toggleBtn.textContent = uiVisible ? 'Hide UI' : 'Show UI'
+    floatCounter.classList.toggle('visible', !uiVisible)
+    updateFloatCounter()
   })
+
+  // Keep counter in sync when sliders change
+  const origGmail = gmailSlider.oninput
+  gmailSlider.addEventListener('input', () => { if (!uiVisible) updateFloatCounter() })
+  slackSlider.addEventListener('input', () => { if (!uiVisible) updateFloatCounter() })
 })()
 </script>
 </body>
